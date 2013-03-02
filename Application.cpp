@@ -33,3 +33,9 @@ QColor Application::color(Application::Color color) const
         return QColor();
     }
 }
+
+QList<QString> Application::availableImageExtensions() const
+{
+    static const QList<QString> extensions = {"png"};
+    return extensions;
+}

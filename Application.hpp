@@ -22,6 +22,7 @@ public:
 
     QUndoStack *undoStack() const;
     QColor color(Color color) const;
+    QList<QString> availableImageExtensions() const;
 
 private:
     QUndoStack *m_undoStack;

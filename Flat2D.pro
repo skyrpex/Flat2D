@@ -4,6 +4,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Flat2D
 TEMPLATE = app
+CONFIG += c++11
 
 include(libs/qt-manhattan-style/qt-manhattan-style.pri)
 include(libs/QxMesh/QxMesh.pri)

@@ -925,17 +925,27 @@ Bone *View::childToBone(Bone *root, Bone *bone) const
 
 bool View::hasFiles(const QMimeData *mimeData) const
 {
+    // Mime data must have URLs
     if(!mimeData->hasUrls()) {
         return false;
     }
 
+    // Check if mime data contains at least one valid URL
     foreach(QUrl url, mimeData->urls()) {
-        QString filePath = url.path().mid(1);
-        QFileInfo fileInfo(filePath);
-        if(!fileInfo.isFile()) {
+        // We are looking for local files
+        if(!url.isLocalFile()) {
+            continue;
+        }
+
+        // We are looking for files (not folders). The file must have one of
+        // the available extensions.
+        QFileInfo fileInfo(url.toLocalFile());
+        if(fileInfo.isFile() &&
+                qApp->availableImageExtensions().contains(fileInfo.completeSuffix())) {
             return true;
         }
     }
 
+    // No luck
     return false;
 }
