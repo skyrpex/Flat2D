@@ -651,7 +651,6 @@ void View::dragLeaveEvent(QDragLeaveEvent *event)
     }
 }
 
-#include "Arrow.hpp"
 void View::dropEvent(QDropEvent *event)
 {
     setAttachmentTargetMode();
