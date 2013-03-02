@@ -1,0 +1,6 @@
+[submodule "libs/QxMesh"]
+	path = libs/QxMesh
+	url = git://github.com/Skyrpex/QxMesh.git
+[submodule "libs/qt-manhattan-style"]
+	path = libs/qt-manhattan-style
+	url = git://github.com/Skyrpex/qt-manhattan-style.git
