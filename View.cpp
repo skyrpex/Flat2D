@@ -657,6 +657,11 @@ void View::dropEvent(QDropEvent *event)
 
     foreach(QUrl url, event->mimeData()->urls()) {
         QString filePath = url.path().mid(1);
+        QFileInfo fileInfo(filePath);
+        if(!fileInfo.isFile()) {
+            continue;
+        }
+
         QPixmap pixmap(filePath);
         Attachment *attachment = new Attachment(pixmap);
 
