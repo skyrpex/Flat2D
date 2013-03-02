@@ -40,8 +40,7 @@ HEADERS  += \
     ViewWidget.hpp \
     Arrow.hpp
 
-RESOURCES += \
-    images.qrc
+RESOURCES +=
 
 FORMS += \
     MainWindow.ui \
