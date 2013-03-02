@@ -46,11 +46,7 @@ void Arrow::updatePosition()
 void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
                   QWidget *)
 {
-    if(!myStartItem || !myEndItem) {
-        return;
-    }
-
-    if(myEndItem->sceneBoundingRect().contains(p1())) {
+    if(!myStartItem || !myEndItem || myStartItem->collidesWithItem(myEndItem)) {
         return;
     }
 
