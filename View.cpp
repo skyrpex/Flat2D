@@ -623,7 +623,7 @@ void View::drawForeground(QPainter *painter, const QRectF &rect)
 
 void View::dragEnterEvent(QDragEnterEvent *event)
 {
-    if(m_editMode == TransformEditMode && event->mimeData()->hasUrls()) {
+    if(m_editMode == TransformEditMode && hasFiles(event->mimeData())) {
         event->accept();
     }
     else {
@@ -633,7 +633,7 @@ void View::dragEnterEvent(QDragEnterEvent *event)
 
 void View::dragMoveEvent(QDragMoveEvent *event)
 {
-    if(m_editMode == TransformEditMode && event->mimeData()->hasUrls()) {
+    if(m_editMode == TransformEditMode && hasFiles(event->mimeData())) {
         event->accept();
     }
     else {
@@ -921,4 +921,21 @@ Bone *View::childToBone(Bone *root, Bone *bone) const
     }
 
     return NULL;
+}
+
+bool View::hasFiles(const QMimeData *mimeData) const
+{
+    if(!mimeData->hasUrls()) {
+        return false;
+    }
+
+    foreach(QUrl url, mimeData->urls()) {
+        QString filePath = url.path().mid(1);
+        QFileInfo fileInfo(filePath);
+        if(!fileInfo.isFile()) {
+            return true;
+        }
+    }
+
+    return false;
 }

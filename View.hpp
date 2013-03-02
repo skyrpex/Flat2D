@@ -7,6 +7,7 @@
 class Bone;
 class Attachment;
 class ResizeNode;
+class QMimeData;
 
 class View : public QGraphicsView
 {
@@ -83,6 +84,8 @@ private:
 
 //    bool isDescendant(Bone *root, Bone *bone) const;
     Bone *childToBone(Bone *root, Bone *bone) const;
+
+    bool hasFiles(const QMimeData *mimeData) const;
 
     Bone *m_root;
 
