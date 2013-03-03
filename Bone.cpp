@@ -26,7 +26,7 @@ Bone::Bone(const QString &name, Bone *parent)
 {
     setFlags(ItemIsSelectable | ItemIsMovable | ItemIsPanel | ItemDoesntPropagateOpacityToChildren);
     setAcceptHoverEvents(true);
-    setBrush(Qt::darkGray);
+    setBrush(Qt::lightGray);
     setPen(QPen(Qt::black, 0));
 
     if(parent && parent->scene()) {
