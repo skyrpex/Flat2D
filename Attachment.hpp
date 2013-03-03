@@ -10,6 +10,7 @@ class Attachment : public QGraphicsPixmapItem
 {
 public:
     Attachment(const QPixmap &pixmap);
+    ~Attachment();
 
     Bone *bone() const;
     void setBone(Bone *bone);

@@ -31,6 +31,11 @@ Attachment::Attachment(const QPixmap &pixmap)
     m_shape.translate(offset);
 }
 
+Attachment::~Attachment()
+{
+    delete m_arrow;
+}
+
 Bone *Attachment::bone() const
 {
     return m_bone;
