@@ -44,7 +44,7 @@ View::View(QWidget *parent) :
     m_parentalLinesVisible(true)
 {
     setSceneRect(-512, -400, 1024, 800);
-    setRenderHints(QPainter::Antialiasing);
+    setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
     setBackgroundBrush(Qt::darkGray);
     setStyleSheet("QGraphicsView { border: 0; }");
     setAcceptDrops(true);
