@@ -41,7 +41,7 @@ View::View(QWidget *parent) :
     m_thickEllipseItem(new QGraphicsEllipseItem(-10, -10, 20, 20)),
     m_lineItem(new QGraphicsLineItem),
     m_solidLineItem(new QGraphicsLineItem),
-    m_parentalLinesVisible(false)
+    m_parentalLinesVisible(true)
 {
     setSceneRect(-512, -400, 1024, 800);
     setRenderHints(QPainter::Antialiasing);
