@@ -6,11 +6,11 @@
 #include <QGraphicsSceneMouseEvent>
 
 const qreal Pi = 3.14;
-const qreal ArrowSize = 5;
 
 Arrow::Arrow(QGraphicsItem *startItem, QGraphicsItem *endItem,
              QGraphicsItem *parent)
     : QGraphicsLineItem(parent)
+    , m_arrowSize(5)
 {
     myStartItem = startItem;
     myEndItem = endItem;
@@ -42,24 +42,27 @@ void Arrow::updatePosition()
     setLine(line);
 }
 
+void Arrow::setArrowSize(qreal arrowSize)
+{
+    m_arrowSize = arrowSize;
+}
+
 void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
                   QWidget *)
 {
-    if(!myStartItem || !myEndItem || myStartItem->collidesWithItem(myEndItem)) {
-        return;
+    if(myStartItem && myEndItem && !myStartItem->collidesWithItem(myEndItem)) {
+        QLineF centerLine(p1(), p2());
+        QPolygonF endpolygon = myEndItem->mapToScene(myEndItem->shape()).toFillPolygon();
+        QPointF startPoint = intersectionPoint(centerLine, endpolygon);
+        setLine(QLineF(startPoint, p1()));
     }
 
     QPen myPen = pen();
     myPen.setColor(myColor);
     painter->setPen(myPen);
     painter->setBrush(myColor);
-
-    QLineF centerLine(p1(), p2());
-    QPolygonF endpolygon = myEndItem->mapToScene(myEndItem->shape()).toFillPolygon();
-    QPointF startPoint = intersectionPoint(centerLine, endpolygon);
-    setLine(QLineF(startPoint, p1()));
-
-    paintArrow(painter, line(), ArrowSize);
+    painter->drawLine(line());
+    paintArrow(painter, line(), m_arrowSize);
 }
 
 QPointF Arrow::p1() const
@@ -100,6 +103,10 @@ QPointF Arrow::intersectionPoint(const QLineF &centerLine, const QPolygonF &poly
 
 void Arrow::paintArrow(QPainter *painter, const QLineF &line, qreal arrowSize)
 {
+    if(line.length() == 0) {
+        return;
+    }
+
     double angle = ::acos(line.dx() / line.length());
     if (line.dy() >= 0) {
         angle = (Pi * 2) - angle;
@@ -112,6 +119,5 @@ void Arrow::paintArrow(QPainter *painter, const QLineF &line, qreal arrowSize)
 
     arrowHead.clear();
     arrowHead << line.p1() << arrowP1 << arrowP2;
-    painter->drawLine(line);
     painter->drawPolygon(arrowHead);
 }

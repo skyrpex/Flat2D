@@ -38,6 +38,8 @@ static const int TranslateKey = Qt::Key_T;
 static const int RotateKey = Qt::Key_R;
 static const int ScaleKey = Qt::Key_S;
 
+static const qreal ParentalArrowLengthOffset = 5.0;
+
 View::View(QWidget *parent) :
     QGraphicsView(new QGraphicsScene, parent),
     m_root(new Bone("Root")),
@@ -46,7 +48,8 @@ View::View(QWidget *parent) :
     m_thickEllipseItem(new QGraphicsEllipseItem(-10, -10, 20, 20)),
     m_lineItem(new QGraphicsLineItem),
     m_solidLineItem(new QGraphicsLineItem),
-    m_parentalLinesVisible(true)
+    m_parentalLinesVisible(true),
+    m_arrow(new Arrow(NULL, NULL))
 {
     setSceneRect(-512, -400, 1024, 800);
     setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
@@ -89,6 +92,12 @@ View::View(QWidget *parent) :
     m_solidLineItem->setPen(QPen(Qt::black, 0, Qt::SolidLine));
     m_solidLineItem->setVisible(false);
     scene()->addItem(m_solidLineItem);
+
+    m_arrow->setZValue(1000);
+    m_arrow->setColor(Qt::green);
+    m_arrow->setArrowSize(10);
+    m_arrow->setVisible(false);
+    scene()->addItem(m_arrow);
 
     //
     setViewportUpdateMode(NoViewportUpdate);
@@ -408,6 +417,7 @@ void View::mousePressEvent(QMouseEvent *event)
                     }
                 }
                 m_targetItem = NULL;
+                m_arrow->setVisible(false);
             }
             else {
                 Attachment *attachment = dynamic_cast<Attachment *>(itemAtCursor);
@@ -415,6 +425,11 @@ void View::mousePressEvent(QMouseEvent *event)
                 if(bone || attachment) {
                     m_hotSpot = mapToScene(event->pos());
                     m_targetItem = itemAtCursor;
+
+                    QLineF line(m_hotSpot, m_targetItem->scenePos());
+                    line.setLength(line.length() - ParentalArrowLengthOffset);
+                    m_arrow->setLine(line);
+                    m_arrow->setVisible(true);
 
                     if(attachment) {
                         setAttachmentTargetMode();
@@ -428,6 +443,7 @@ void View::mousePressEvent(QMouseEvent *event)
         else if(event->buttons() & Qt::RightButton) {
             // Cancel parent edit
             m_targetItem = NULL;
+            m_arrow->setVisible(false);
         }
     }
 }
@@ -498,6 +514,15 @@ void View::mouseMoveEvent(QMouseEvent *event)
     else if(m_editMode == ParentEditMode) {
         if(event->buttons() == 0) {
             QGraphicsView::mouseMoveEvent(event);
+
+            if(m_targetItem) {
+                QPointF scenePos = mapToScene(event->pos());
+                QLineF line(m_targetItem->scenePos(), scenePos);
+                line.setLength(line.length() - ParentalArrowLengthOffset);
+                line.setPoints(line.p2(), line.p1());
+                qDebug() << line;
+                m_arrow->setLine(line);
+            }
         }
 //        if(event->buttons() == 0) {
 //            foreach(QGraphicsItem *item, scene()->items()) {
@@ -601,47 +626,6 @@ void View::drawBackground(QPainter *painter, const QRectF &rect)
 {
     QGraphicsView::drawBackground(painter, rect);
     painter->fillRect(sceneRect(), Qt::gray);
-}
-
-void View::drawForeground(QPainter *painter, const QRectF &rect)
-{
-    QGraphicsView::drawForeground(painter, rect);
-
-    // Draw parental lines
-//    if(m_parentalLinesVisible) {
-//        foreach(QGraphicsItem *item, scene()->items()) {
-//            Bone *bone = dynamic_cast<Bone *>(item);
-//            if(bone) {
-//                // Draw line to parent bone
-//                if(bone->parentBone()) {
-//                    painter->setPen(QPen(Qt::black, 0));
-//                    painter->drawLine(bone->scenePos(), bone->parentBone()->scenePeakPos());
-//                }
-
-                // Draw lines to attachments
-//                foreach(Attachment *attachment, bone->attachments()) {
-//                    painter->setPen(QPen(Qt::darkRed, 0));
-//                    painter->drawLine(bone->scenePos(), attachment->scenePos());
-//                }
-//            }
-//        }
-//    }
-//    foreach(Attachment *attachment, attachments()) {
-//        painter->drawPath(attachment->mapToScene(attachment->shape()));
-//    }
-
-    // Draw parental edit line
-    if(m_editMode == ParentEditMode) {
-        if(m_targetItem) {
-            QPen pen(Qt::green, 0);
-            pen.setStyle(Qt::DashLine);
-            pen.setCosmetic(true);
-            painter->setPen(pen);
-
-            QPointF cursorPos = mapToScene(mapFromGlobal(QCursor::pos()));
-            painter->drawLine(m_hotSpot, cursorPos);
-        }
-    }
 }
 
 void View::dragEnterEvent(QDragEnterEvent *event)

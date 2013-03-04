@@ -37,6 +37,8 @@
 
      void updatePosition();
 
+     void setArrowSize(qreal arrowSize);
+
  protected:
      void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                 QWidget *widget = 0);
@@ -51,6 +53,7 @@
      QGraphicsItem *myEndItem;
      QColor myColor;
      QPolygonF arrowHead;
+     qreal m_arrowSize;
  };
 
 #endif // ARROW_HPP

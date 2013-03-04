@@ -7,6 +7,7 @@
 class Bone;
 class Attachment;
 class ResizeNode;
+class Arrow;
 class QMimeData;
 class QFileInfo;
 
@@ -60,7 +61,6 @@ protected:
     void contextMenuEvent(QContextMenuEvent *event);
     void paintEvent(QPaintEvent *event);
     void drawBackground(QPainter *painter, const QRectF &rect);
-    void drawForeground(QPainter *painter, const QRectF &rect);
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
@@ -122,6 +122,8 @@ private:
     bool m_hasTranslated;
 
     bool m_parentalLinesVisible;
+
+    Arrow *m_arrow;
 };
 
 #endif // VIEW_HPP
