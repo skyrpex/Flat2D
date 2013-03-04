@@ -58,6 +58,7 @@ protected:
     void wheelEvent(QWheelEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
     void paintEvent(QPaintEvent *event);
+    void drawBackground(QPainter *painter, const QRectF &rect);
     void drawForeground(QPainter *painter, const QRectF &rect);
 
     void dragEnterEvent(QDragEnterEvent *event);

@@ -593,6 +593,12 @@ void View::paintEvent(QPaintEvent *event)
     QGraphicsView::paintEvent(event);
 }
 
+void View::drawBackground(QPainter *painter, const QRectF &rect)
+{
+    QGraphicsView::drawBackground(painter, rect);
+    painter->fillRect(sceneRect(), Qt::gray);
+}
+
 void View::drawForeground(QPainter *painter, const QRectF &rect)
 {
     QGraphicsView::drawForeground(painter, rect);
