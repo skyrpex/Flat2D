@@ -45,6 +45,7 @@
      QPointF p1() const;
      QPointF p2() const;
      QPointF intersectionPoint(const QLineF &centerLine, const QPolygonF &endPolygon) const;
+     void paintArrow(QPainter *painter, const QLineF &line, qreal arrowSize);
 
      QGraphicsItem *myStartItem;
      QGraphicsItem *myEndItem;
