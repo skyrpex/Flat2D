@@ -57,13 +57,9 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     painter->setBrush(myColor);
 
     QLineF centerLine(p1(), p2());
-    QPolygonF startPolygon = myStartItem->mapToScene(myStartItem->shape()).toFillPolygon();
     QPolygonF endpolygon = myEndItem->mapToScene(myEndItem->shape()).toFillPolygon();
-
     QPointF startPoint = intersectionPoint(centerLine, endpolygon);
-    QPointF endPoint = intersectionPoint(centerLine, startPolygon);
-
-    setLine(QLineF(startPoint, endPoint));
+    setLine(QLineF(startPoint, p1()));
 
     double angle = ::acos(line().dx() / line().length());
     if (line().dy() >= 0)
