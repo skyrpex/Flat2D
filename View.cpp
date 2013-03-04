@@ -95,16 +95,16 @@ View::View(QWidget *parent) :
     m_solidLineItem->setVisible(false);
     scene()->addItem(m_solidLineItem);
 
+    m_arrow->setZValue(1000);
+    m_arrow->setColor(Qt::green);
+    m_arrow->setArrowSize(5);
+    m_arrow->setPen(QPen(Qt::green, 3));
+    m_arrow->setVisible(false);
+    scene()->addItem(m_arrow);
+
     {
         QPen pen(Qt::green, 5);
         pen.setCosmetic(true);
-
-        m_arrow->setZValue(1000);
-        m_arrow->setColor(Qt::green);
-        m_arrow->setArrowSize(15);
-        m_arrow->setPen(pen);
-        m_arrow->setVisible(false);
-        scene()->addItem(m_arrow);
 
         m_parentalStartItem->setVisible(false);
         m_parentalStartItem->setBrush(Qt::NoBrush);
