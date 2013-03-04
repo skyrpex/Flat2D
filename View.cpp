@@ -49,7 +49,7 @@ View::View(QWidget *parent) :
     m_lineItem(new QGraphicsLineItem),
     m_solidLineItem(new QGraphicsLineItem),
     m_parentalLinesVisible(true),
-    m_arrow(new Arrow(NULL, NULL))
+    m_arrow(new Arrow(NULL, NULL, true))
 {
     setSceneRect(-512, -400, 1024, 800);
     setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
@@ -418,6 +418,8 @@ void View::mousePressEvent(QMouseEvent *event)
                 }
                 m_targetItem = NULL;
                 m_arrow->setVisible(false);
+                m_arrow->setStartItem(NULL);
+                m_arrow->setEndItem(NULL);
             }
             else {
                 Attachment *attachment = dynamic_cast<Attachment *>(itemAtCursor);
@@ -429,6 +431,7 @@ void View::mousePressEvent(QMouseEvent *event)
                     QLineF line(m_hotSpot, m_targetItem->scenePos());
                     line.setLength(line.length() - ParentalArrowLengthOffset);
                     m_arrow->setLine(line);
+                    m_arrow->setStartItem(itemAtCursor);
                     m_arrow->setVisible(true);
 
                     if(attachment) {
@@ -444,6 +447,8 @@ void View::mousePressEvent(QMouseEvent *event)
             // Cancel parent edit
             m_targetItem = NULL;
             m_arrow->setVisible(false);
+            m_arrow->setStartItem(NULL);
+            m_arrow->setEndItem(NULL);
         }
     }
 }
@@ -514,13 +519,19 @@ void View::mouseMoveEvent(QMouseEvent *event)
     else if(m_editMode == ParentEditMode) {
         if(event->buttons() == 0) {
             QGraphicsView::mouseMoveEvent(event);
+        }
 
-            if(m_targetItem) {
+        if(m_targetItem) {
+            QGraphicsItem *item = itemAt(event->pos());
+            Bone *bone = dynamic_cast<Bone *>(item);
+
+            m_arrow->setEndItem(bone);
+
+            if(!bone) {
                 QPointF scenePos = mapToScene(event->pos());
                 QLineF line(m_targetItem->scenePos(), scenePos);
                 line.setLength(line.length() - ParentalArrowLengthOffset);
                 line.setPoints(line.p2(), line.p1());
-                qDebug() << line;
                 m_arrow->setLine(line);
             }
         }

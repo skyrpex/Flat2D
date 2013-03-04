@@ -7,10 +7,11 @@
 
 const qreal Pi = 3.14;
 
-Arrow::Arrow(QGraphicsItem *startItem, QGraphicsItem *endItem,
+Arrow::Arrow(QGraphicsItem *startItem, QGraphicsItem *endItem, bool centerP2,
              QGraphicsItem *parent)
     : QGraphicsLineItem(parent)
-    , m_arrowSize(5)
+    , m_arrowSize(5),
+      m_centerP2(centerP2)
 {
     myStartItem = startItem;
     myEndItem = endItem;
@@ -79,6 +80,10 @@ QPointF Arrow::p2() const
 {
     if(!myEndItem) {
         return QPointF();
+    }
+
+    if(m_centerP2) {
+        return myEndItem->sceneBoundingRect().center();
     }
 
     return myEndItem->scenePos();

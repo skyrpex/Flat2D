@@ -14,7 +14,7 @@
  public:
      enum { Type = UserType + 4 };
 
-     Arrow(QGraphicsItem *startItem, QGraphicsItem *endItem,
+     Arrow(QGraphicsItem *startItem, QGraphicsItem *endItem, bool centerP2 = false,
        QGraphicsItem *parent = 0);
 
      int type() const
@@ -54,6 +54,7 @@
      QColor myColor;
      QPolygonF arrowHead;
      qreal m_arrowSize;
+     bool m_centerP2;
  };
 
 #endif // ARROW_HPP
