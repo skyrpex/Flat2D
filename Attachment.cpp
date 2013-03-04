@@ -25,6 +25,7 @@ Attachment::Attachment(const QPixmap &pixmap)
     setOffset(offset);
 
     foreach(QxMeshDef meshDef, QxMeshDef::fromImage(pixmap.toImage())) {
+        meshDef.simplifyByTolerance(1);
         m_shape.addPolygon(meshDef.boundary);
         m_shape.closeSubpath();
     }
