@@ -13,6 +13,10 @@
 #include <QMimeData>
 #include <QMenu>
 #include <QScrollBar>
+#include <QDir>
+#include <QFile>
+#include <QMessageBox>
+#include <cmath>
 #include "commands/RotateCommand.hpp"
 #include "commands/ScaleCommand.hpp"
 #include "commands/TranslateCommand.hpp"
@@ -674,6 +678,7 @@ void View::dropEvent(QDropEvent *event)
 {
     setAttachmentTargetMode();
 
+    QPointF scenePos = mapToScene(event->pos());
     foreach(QUrl url, event->mimeData()->urls()) {
         QString filePath = url.path().mid(1);
         QFileInfo fileInfo(filePath);
@@ -681,21 +686,12 @@ void View::dropEvent(QDropEvent *event)
             continue;
         }
 
-        QPixmap pixmap(filePath);
-        Attachment *attachment = new Attachment(pixmap);
+        // Import image if not relative to the current path
+        if(!filePath.contains(QDir::currentPath())) {
+            filePath = importFile(filePath);
+        }
 
-        QPointF scenePos = mapToScene(event->pos());
-        attachment->setPos(scenePos);
-        attachment->arrow()->setVisible(m_parentalLinesVisible);
-
-//        QPointF localPos = m_root->mapFromScene(scenePos);
-//        attachment->setLocalPos(localPos);
-//        attachment->setLocalRotation(-m_root->sceneRotation());
-
-        m_root->addAttachment(attachment);
-        scene()->addItem(attachment);
-
-//        scene()->addItem(new Arrow(m_root, attachment));
+        loadAttachment(filePath, scenePos);
     }
 
     event->acceptProposedAction();
@@ -967,4 +963,45 @@ bool View::hasFiles(const QMimeData *mimeData) const
 
     // No luck
     return false;
+}
+
+void View::loadAttachment(const QString &texturePath, const QPointF scenePos)
+{
+    QPixmap pixmap(texturePath);
+    if(pixmap.isNull()) {
+        return;
+    }
+
+    Attachment *attachment = new Attachment(pixmap);
+    attachment->setPos(scenePos);
+    attachment->arrow()->setVisible(m_parentalLinesVisible);
+
+    m_root->addAttachment(attachment);
+    scene()->addItem(attachment);
+}
+
+QFileInfo View::findFreeFileInfo(const QFileInfo &fileInfo) const
+{
+    QFileInfo freeFileInfo(QDir::current().filePath( fileInfo.fileName() ));
+
+    const QDir dir = freeFileInfo.dir();
+    const QString baseName = freeFileInfo.baseName();
+    const QString suffix = freeFileInfo.suffix();
+    int n = 0;
+    while(freeFileInfo.exists()) {
+        QString fileName = QString("%1-%3.%2").arg(baseName, suffix).arg(++n);
+        QString path = dir.absoluteFilePath(fileName);
+        freeFileInfo.setFile(path);
+    }
+
+    return freeFileInfo;
+}
+
+QString View::importFile(const QString &filePath)
+{
+    QFileInfo freeFileInfo = findFreeFileInfo(QFileInfo(filePath));
+    QString freeFilePath = freeFileInfo.absoluteFilePath();
+    QFile(filePath).copy(freeFilePath);
+
+    return freeFilePath;
 }

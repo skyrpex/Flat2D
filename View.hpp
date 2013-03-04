@@ -8,6 +8,7 @@ class Bone;
 class Attachment;
 class ResizeNode;
 class QMimeData;
+class QFileInfo;
 
 class View : public QGraphicsView
 {
@@ -88,6 +89,11 @@ private:
     Bone *childToBone(Bone *root, Bone *bone) const;
 
     bool hasFiles(const QMimeData *mimeData) const;
+
+    void loadAttachment(const QString &texturePath, const QPointF scenePos);
+
+    QFileInfo findFreeFileInfo(const QFileInfo &fileInfo) const;
+    QString importFile(const QString &filePath);
 
     Bone *m_root;
 
