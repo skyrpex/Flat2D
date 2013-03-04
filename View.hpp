@@ -84,6 +84,7 @@ private:
     void cancelRotation();
     void cancelScale();
     void cancelBoneCreation();
+    void cancelParentEdit();
 
 //    bool isDescendant(Bone *root, Bone *bone) const;
     Bone *childToBone(Bone *root, Bone *bone) const;
@@ -124,7 +125,8 @@ private:
     bool m_parentalLinesVisible;
 
     Arrow *m_arrow;
-    QGraphicsPathItem *m_pathItem;
+    QGraphicsPathItem *m_parentalStartItem;
+    QGraphicsPathItem *m_parentalEndItem;
 };
 
 #endif // VIEW_HPP

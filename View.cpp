@@ -50,7 +50,8 @@ View::View(QWidget *parent) :
     m_solidLineItem(new QGraphicsLineItem),
     m_parentalLinesVisible(true),
     m_arrow(new Arrow(NULL, NULL, true)),
-    m_pathItem(new QGraphicsPathItem)
+    m_parentalStartItem(new QGraphicsPathItem),
+    m_parentalEndItem(new QGraphicsPathItem)
 {
     setSceneRect(-512, -400, 1024, 800);
     setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
@@ -105,10 +106,17 @@ View::View(QWidget *parent) :
         m_arrow->setVisible(false);
         scene()->addItem(m_arrow);
 
-        m_pathItem->setVisible(false);
-        m_pathItem->setBrush(Qt::NoBrush);
-        m_pathItem->setPen(pen);
-        scene()->addItem(m_pathItem);
+        m_parentalStartItem->setVisible(false);
+        m_parentalStartItem->setBrush(Qt::NoBrush);
+        m_parentalStartItem->setPen(pen);
+        m_parentalStartItem->setFlag(QGraphicsItem::ItemStacksBehindParent);
+        scene()->addItem(m_parentalStartItem);
+
+        m_parentalEndItem->setVisible(false);
+        m_parentalEndItem->setBrush(Qt::NoBrush);
+        m_parentalEndItem->setPen(pen);
+        m_parentalEndItem->setFlag(QGraphicsItem::ItemStacksBehindParent);
+        scene()->addItem(m_parentalEndItem);
     }
 
     //
@@ -428,12 +436,7 @@ void View::mousePressEvent(QMouseEvent *event)
                         }
                     }
                 }
-                m_targetItem = NULL;
-                m_arrow->setVisible(false);
-                m_arrow->setStartItem(NULL);
-                m_arrow->setEndItem(NULL);
-                m_pathItem->setVisible(false);
-                m_pathItem->setParentItem(NULL);
+                cancelParentEdit();
             }
             else {
                 Attachment *attachment = dynamic_cast<Attachment *>(itemAtCursor);
@@ -448,9 +451,9 @@ void View::mousePressEvent(QMouseEvent *event)
                     m_arrow->setStartItem(itemAtCursor);
                     m_arrow->setVisible(true);
 
-                    m_pathItem->setPath(itemAtCursor->shape());
-                    m_pathItem->setParentItem(itemAtCursor);
-                    m_pathItem->setVisible(true);
+                    m_parentalStartItem->setPath(itemAtCursor->shape());
+                    m_parentalStartItem->setParentItem(itemAtCursor);
+                    m_parentalStartItem->setVisible(true);
 
                     if(attachment) {
                         setAttachmentTargetMode();
@@ -463,12 +466,7 @@ void View::mousePressEvent(QMouseEvent *event)
         }
         else if(event->buttons() & Qt::RightButton) {
             // Cancel parent edit
-            m_targetItem = NULL;
-            m_arrow->setVisible(false);
-            m_arrow->setStartItem(NULL);
-            m_arrow->setEndItem(NULL);
-            m_pathItem->setVisible(false);
-            m_pathItem->setParentItem(NULL);
+            cancelParentEdit();
         }
     }
 }
@@ -546,6 +544,11 @@ void View::mouseMoveEvent(QMouseEvent *event)
             Bone *bone = dynamic_cast<Bone *>(item);
 
             m_arrow->setEndItem(bone);
+            m_parentalEndItem->setParentItem(bone);
+            m_parentalEndItem->setVisible(bone);
+            if(bone) {
+                m_parentalEndItem->setPath(bone->shape());
+            }
 
             if(!bone) {
                 QPointF scenePos = mapToScene(event->pos());
@@ -917,6 +920,21 @@ void View::cancelBoneCreation()
 
     delete m_targetBone;
     m_targetBone = NULL;
+}
+
+void View::cancelParentEdit()
+{
+    m_targetItem = NULL;
+
+    m_arrow->setVisible(false);
+    m_arrow->setStartItem(NULL);
+    m_arrow->setEndItem(NULL);
+
+    m_parentalStartItem->setVisible(false);
+    m_parentalStartItem->setParentItem(NULL);
+
+    m_parentalEndItem->setVisible(false);
+    m_parentalEndItem->setParentItem(NULL);
 }
 
 //bool View::isDescendant(Bone *root, Bone *bone) const
