@@ -44,6 +44,7 @@
  private:
      QPointF p1() const;
      QPointF p2() const;
+     QPointF intersectionPoint(const QLineF &centerLine, const QPolygonF &endPolygon) const;
 
      QGraphicsItem *myStartItem;
      QGraphicsItem *myEndItem;

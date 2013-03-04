@@ -57,22 +57,13 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     painter->setBrush(myColor);
 
     QLineF centerLine(p1(), p2());
-    QPolygonF endPolygon = myEndItem->mapToScene(myEndItem->shape()).toFillPolygon();
-    QPointF p1 = endPolygon.first();
-    QPointF p2;
-    QPointF intersectPoint;
-    QLineF polyLine;
-    for (int i = 1; i < endPolygon.count(); ++i) {
-        p2 = endPolygon.at(i);
-        polyLine = QLineF(p1, p2);
-        QLineF::IntersectType intersectType =
-                polyLine.intersect(centerLine, &intersectPoint);
-        if (intersectType == QLineF::BoundedIntersection)
-            break;
-        p1 = p2;
-    }
+    QPolygonF startPolygon = myStartItem->mapToScene(myStartItem->shape()).toFillPolygon();
+    QPolygonF endpolygon = myEndItem->mapToScene(myEndItem->shape()).toFillPolygon();
 
-    setLine(QLineF(intersectPoint, this->p1()));
+    QPointF startPoint = intersectionPoint(centerLine, endpolygon);
+    QPointF endPoint = intersectionPoint(centerLine, startPolygon);
+
+    setLine(QLineF(startPoint, endPoint));
 
     double angle = ::acos(line().dx() / line().length());
     if (line().dy() >= 0)
@@ -106,4 +97,21 @@ QPointF Arrow::p2() const
     }
 
     return myEndItem->scenePos();
+}
+
+QPointF Arrow::intersectionPoint(const QLineF &centerLine, const QPolygonF &polygon) const
+{
+    QPointF p1 = polygon.first();
+    for (int i = 1; i < polygon.count(); ++i) {
+        QPointF p2 = polygon.at(i);
+
+        QPointF intersectPoint;
+        QLineF::IntersectType intersectType = QLineF(p1, p2).intersect(centerLine, &intersectPoint);
+        if(intersectType == QLineF::BoundedIntersection) {
+            return intersectPoint;
+        }
+        p1 = p2;
+    }
+
+    return centerLine.p2();
 }
