@@ -55,6 +55,7 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void wheelEvent(QWheelEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
     void paintEvent(QPaintEvent *event);
     void drawForeground(QPainter *painter, const QRectF &rect);

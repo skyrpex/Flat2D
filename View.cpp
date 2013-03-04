@@ -12,6 +12,7 @@
 #include <QFileInfo>
 #include <QMimeData>
 #include <QMenu>
+#include <QScrollBar>
 #include "commands/RotateCommand.hpp"
 #include "commands/ScaleCommand.hpp"
 #include "commands/TranslateCommand.hpp"
@@ -541,6 +542,18 @@ void View::mouseReleaseEvent(QMouseEvent *event)
 
 //        m_targetItem = NULL;
 //    }
+}
+
+void View::wheelEvent(QWheelEvent *event)
+{
+    QPointF center = mapToScene(mapFromGlobal(QCursor::pos()));
+
+    qreal factor = pow(2.0, event->delta() / 240.0);
+    scale(factor, factor);
+
+    QPoint offset = mapFromScene(center) - mapFromGlobal(QCursor::pos());
+    horizontalScrollBar()->setValue(horizontalScrollBar()->value() + offset.x());
+    verticalScrollBar()->setValue(verticalScrollBar()->value() + offset.y());
 }
 
 void View::contextMenuEvent(QContextMenuEvent *event)
