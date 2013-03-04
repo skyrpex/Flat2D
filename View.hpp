@@ -124,6 +124,7 @@ private:
     bool m_parentalLinesVisible;
 
     Arrow *m_arrow;
+    QGraphicsPathItem *m_pathItem;
 };
 
 #endif // VIEW_HPP

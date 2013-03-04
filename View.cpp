@@ -49,7 +49,8 @@ View::View(QWidget *parent) :
     m_lineItem(new QGraphicsLineItem),
     m_solidLineItem(new QGraphicsLineItem),
     m_parentalLinesVisible(true),
-    m_arrow(new Arrow(NULL, NULL, true))
+    m_arrow(new Arrow(NULL, NULL, true)),
+    m_pathItem(new QGraphicsPathItem)
 {
     setSceneRect(-512, -400, 1024, 800);
     setRenderHints(QPainter::Antialiasing | QPainter::HighQualityAntialiasing);
@@ -93,11 +94,22 @@ View::View(QWidget *parent) :
     m_solidLineItem->setVisible(false);
     scene()->addItem(m_solidLineItem);
 
-    m_arrow->setZValue(1000);
-    m_arrow->setColor(Qt::green);
-    m_arrow->setArrowSize(10);
-    m_arrow->setVisible(false);
-    scene()->addItem(m_arrow);
+    {
+        QPen pen(Qt::green, 5);
+        pen.setCosmetic(true);
+
+        m_arrow->setZValue(1000);
+        m_arrow->setColor(Qt::green);
+        m_arrow->setArrowSize(15);
+        m_arrow->setPen(pen);
+        m_arrow->setVisible(false);
+        scene()->addItem(m_arrow);
+
+        m_pathItem->setVisible(false);
+        m_pathItem->setBrush(Qt::NoBrush);
+        m_pathItem->setPen(pen);
+        scene()->addItem(m_pathItem);
+    }
 
     //
     setViewportUpdateMode(NoViewportUpdate);
@@ -420,6 +432,8 @@ void View::mousePressEvent(QMouseEvent *event)
                 m_arrow->setVisible(false);
                 m_arrow->setStartItem(NULL);
                 m_arrow->setEndItem(NULL);
+                m_pathItem->setVisible(false);
+                m_pathItem->setParentItem(NULL);
             }
             else {
                 Attachment *attachment = dynamic_cast<Attachment *>(itemAtCursor);
@@ -433,6 +447,10 @@ void View::mousePressEvent(QMouseEvent *event)
                     m_arrow->setLine(line);
                     m_arrow->setStartItem(itemAtCursor);
                     m_arrow->setVisible(true);
+
+                    m_pathItem->setPath(itemAtCursor->shape());
+                    m_pathItem->setParentItem(itemAtCursor);
+                    m_pathItem->setVisible(true);
 
                     if(attachment) {
                         setAttachmentTargetMode();
@@ -449,6 +467,8 @@ void View::mousePressEvent(QMouseEvent *event)
             m_arrow->setVisible(false);
             m_arrow->setStartItem(NULL);
             m_arrow->setEndItem(NULL);
+            m_pathItem->setVisible(false);
+            m_pathItem->setParentItem(NULL);
         }
     }
 }
