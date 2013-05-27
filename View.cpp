@@ -441,7 +441,7 @@ void View::mousePressEvent(QMouseEvent *event)
             else {
                 Attachment *attachment = dynamic_cast<Attachment *>(itemAtCursor);
                 // Start parent edit
-                if(bone || attachment) {
+                if(bone && bone != topLevelBone(scene()->items()) || attachment) {
                     m_hotSpot = mapToScene(event->pos());
                     m_targetItem = itemAtCursor;
 
