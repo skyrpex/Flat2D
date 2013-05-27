@@ -63,7 +63,7 @@ TextureDirWidget::TextureDirWidget(QWidget *parent) :
     for(int i = 1; i < m_model->columnCount(); ++i) {
         m_view->setColumnHidden(i, true);
     }
-    m_view->setStyleSheet("QTreeView { border: 0; }");
+    m_view->setFrameStyle(QFrame::NoFrame);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setMargin(0);
